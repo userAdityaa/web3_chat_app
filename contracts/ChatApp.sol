@@ -17,6 +17,13 @@ contract ChatApp {
         string msg;
     }
 
+    struct AllUserStruck {
+        string name;
+        address accountAddress;
+    }
+
+    AllUserStruck[] getAllUsers;
+
     mapping(address => user) userList;
     mapping(bytes32 => message[]) allMessages;
 
@@ -29,6 +36,7 @@ contract ChatApp {
         require(!checkUserExists(msg.sender), "User already exists");
         require(bytes(name).length > 0, "Name cannot be empty");
         userList[msg.sender].name = name;
+        getAllUsers.push(AllUserStruck(name, msg.sender));
     }
 
     // get_username:
@@ -79,5 +87,36 @@ contract ChatApp {
     ) internal {
         friend memory newFriend = friend(friend_key, name);
         userList[currentUser].friendList.push(newFriend);
+    }
+
+    function getMyFriendList() external view returns (friend[] memory) {
+        return userList[msg.sender].friendList;
+    }
+
+    function _getChatCode(
+        address pubkey1,
+        address pubkey2
+    ) internal pure returns (bytes32) {
+        if (pubkey1 < pubkey2) {
+            return keccak256(abi.encodePacked(pubkey1, pubkey2));
+        } else {
+            return keccak256(abi.encodePacked(pubkey2, pubkey1));
+        }
+    }
+
+    function sendMessage(address friendKey, string calldata _msg) external {
+        require(checkUserExists(msg.sender), "Create an account first");
+        require(checkUserExists(friendKey), "User does not exist");
+        require(
+            checkAlreadyFriends(msg.sender, friendKey),
+            "Not friends with this user"
+        );
+        bytes32 chatCode = _getChatCode(msg.sender, friendKey);
+        message memory newMessage = message(msg.sender, block.timestamp, _msg);
+        allMessages[chatCode].push(newMessage);
+    }
+
+    function getAllAppUser() public view returns (AllUserStruck[] memory) {
+        return getAllUsers;
     }
 }
