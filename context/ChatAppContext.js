@@ -1,12 +1,12 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useState } from 'react';
 
-export const ChatAppContext = createContext();
+export const ChatAppContext = createContext({ title: 'Something toh show karo' });
 
 export const ChatAppProvider = ({ children }) => {
-  const title = "Hey, welcome to blockchain chat app";
-  
+  const [title, setTitle] = useState('Default Title');
+
   return (
-    <ChatAppContext.Provider value={{ title }}>
+    <ChatAppContext.Provider value={{ title, setTitle }}>
       {children}
     </ChatAppContext.Provider>
   );
