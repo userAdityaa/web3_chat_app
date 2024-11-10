@@ -5,6 +5,7 @@ import {chatAppAddress, ChatAppABI, ChatAppAddress} from '../context/constants'
 
 export const CheckIfWalletConnected = async() => {
     try {
+        window.ethereum
         if(!window.ethereum) {
             return console.log("Install Metamask")  
         }
