@@ -39,28 +39,82 @@ export const ChatAppProvider = ({ children }) => {
     fetchData();
   }, []);
 
-  const readMessages = async(friendAddress) => { 
+  const readMessage = async(friendAddress) => { 
     try { 
-      const contract = await connectingWithContract();
-      const read = await contract.readMessage(friendAddress); 
-      setFriendMsg(read);
+      const contract = await connectingWithContract();  
+      const read = await contract.readMessage(friendAddress);
     } catch(error) { 
-      setError('Current user is not connected to the contract');
+      setError("Currently You have no messages.");
     }
+  }
+
+  const createAccount = async({name, accountAddress}) => { 
+    try {
+      if(name || accountAddress) return setError("Please fill in the form");
+      const contract = await connectingWithContract();  
+      const getCreatedUser = await contract.createAccount(name);
+      setLoading(true);
+      await getCreatedUser.wait();
+      setLoading(false); 
+      window.location.reload();
+    } catch(error) { 
+       setError("Error while creating your account please reload the browser.")
+    }
+  }
+
+  const addFriends = async({name, accountAddress}) => { 
+    try { 
+      if(name || accountAddress) return setError("Please fill in the form");
+      const contract = await connectingWithContract();
+      const addFriend = await contract.addFriend(accountAddress, name);
+      setLoading(true); 
+      await addFriend.wait();
+      setLoading(false);
+      router.push("/");
+      window.location.reload();
+    } catch(error) {
+      setError("Something went wrong while adding your friend");
+    }
+  }
+
+  const sendMessage = async({msg, address}) => { 
+    try{ 
+      if(msg || address) return setError("Please fill in the form");  
+      const contract = await connectingWithContract();
+      const addMessage = await contract.sendMessage(address, msg);
+      setLoading(true); 
+      await addMessage.wait();
+      setLoading(false);
+      window.location.reload();
+    } catch(error) { 
+      setError("Please reload the browser and try again");
+    }
+  }
+
+  const readUser = async({userAddress}) =>{ 
+    const contract = await connectingWithContract();  
+     const userName = await contract.getUsername(userAddress);  
+     setUserName(userName);
+     setCurrentUserAddress(userAddress);
   }
 
   return (
     <ChatAppContext.Provider 
       value={{
+        readMessage, 
+        createAccount, 
+        addFriends,
+        sendMessage,
+        readUser, 
         account, 
         userName, 
-        friendList, 
-        friendMsg, 
-        loading, 
-        userLists, 
-        error, 
-        currentUser, 
-        currentUserAddress 
+        friendList,
+        friendMsg,
+        loading,
+        userLists,
+        error,
+        currentUser,
+        currentUserAddress  
       }}
     >
       {children}
