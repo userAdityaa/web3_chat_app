@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { CheckIfWalletConnected, connectingWithContract } from '../utils/apiFeature';
+import { CheckIfWalletConnected, connectingWithContract, connectWallet } from '../utils/apiFeature';
 import { useRouter } from 'next/navigation';
 
 export const ChatAppContext = createContext(); 
@@ -106,6 +106,8 @@ export const ChatAppProvider = ({ children }) => {
         addFriends,
         sendMessage,
         readUser, 
+        connectWallet, 
+        CheckIfWalletConnected, 
         account, 
         userName, 
         friendList,
