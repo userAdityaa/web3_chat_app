@@ -5,6 +5,8 @@ import Link from 'next/link'
 import Style from "./Navbar.module.css"
 import { ChatAppContext } from '@/context/ChatAppContext'
 import images from '../../assets';
+import {Model} from '../index';
+
 
 export const Navbar = () => {
   const menuItems = [
@@ -37,7 +39,7 @@ export const Navbar = () => {
   const [active, setActive] = React.useState(2) 
   const [open, setOpen] = React.useState(false)
   const [openModal, setOpenModal] = React.useState(false)
-  const {account, userName, connectWallet} = useContext(ChatAppContext);
+  const {account, userName, connectWallet, createAccount} = useContext(ChatAppContext);
   return (
     <div className={Style.Navbar}>
       <div className={Style.Navbar_box}>
@@ -91,10 +93,15 @@ export const Navbar = () => {
           ): (
             <button onClick={() => setOpenModal(true)}>
               {""}
-              <Image src={userName ? images.accountName: images.create2} alt='Account Image' width={20} height={20}>
-                {''}
-                <small>{userName || "Create Account"}</small>
-              </Image>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Image 
+                src={userName ? images.accountName : images.create2} 
+                alt="Account Image" 
+                width={20} 
+                height={20} 
+              />
+              <small style={{ marginLeft: '8px' }}>{userName || "Create Account"}</small>
+            </div>
             </button>
           )} 
         </div>
@@ -103,6 +110,21 @@ export const Navbar = () => {
         </div>
       </div>
       </div>
+
+    {/* Modal Component:  */}
+    {openModal && (
+      <div className={Style.modelBox}>
+        <Model openModal = {setOpenModal} title = 'Welcome to' head = 'Chat Buddy' info = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque animi culpa est aut aliquam neque voluptates. Optio doloribus voluptatibus architecto.'
+        smallInfo = 'Kindly select your name...'
+        image = {images.hero}
+        functionName = {createAccount}
+        address={account} />
+      </div>
+    )}
+    {/* {error == "" ? "": <Error error = {error}/>} */}
     </div>
   )
 }
+
+
+
