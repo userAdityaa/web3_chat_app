@@ -18,11 +18,13 @@ export const ChatAppProvider = ({ children }) => {
 
   const router = useRouter(); 
 
+
   const fetchData = async () => { 
     try { 
       console.log("Checking wallet connection...");
       const contract = await connectingWithContract(); 
       const currentAccount = await CheckIfWalletConnected(); 
+      console.log(currentAccount);
       setAccount(currentAccount);
       const userName = await contract.getUsername(currentAccount);
       setUserName(userName); 
@@ -33,6 +35,8 @@ export const ChatAppProvider = ({ children }) => {
     } catch (error) {
       setError("Please install and connect your wallet"); 
     }
+
+
   };
 
   useEffect(() => { 
